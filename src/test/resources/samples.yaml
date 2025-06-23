@@ -1,0 +1,13 @@
+- name: Berlin Trip
+  parameters:
+    - >
+      I’d like to plan a trip to Berlin. 
+      I’m leaving on 2025-07-10 and want to stay 3 nights, 
+      my max is $150 per night on hotels, 
+      and I love history and great food.
+  expected-output: |
+    {
+        "plan": "Fly the plane on 2025-07-11 at 09:00, stay at some hotel for 3 nights under $100/night, and visit place A, place B, and place C.",
+        "airfareValue": 500,
+        "airfareBudget": 0
+    }

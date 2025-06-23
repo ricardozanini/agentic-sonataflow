@@ -1,0 +1,13 @@
+[
+  {
+    "airline": "Lufthansa",
+    "price": 850,
+    "departure": "2025-07-10T22:00"
+  },
+  {
+    "airline": "Air Canada",
+    "price": 790,
+    "departure": "2025-07-11T13:45"
+  }
+]
+
