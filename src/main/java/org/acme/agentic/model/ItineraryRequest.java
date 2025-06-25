@@ -1,13 +1,15 @@
 package org.acme.agentic.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ItineraryRequest {
     private String city;
     private List<String> interests;
     private int days;
 
-    public ItineraryRequest() {}
+    public ItineraryRequest() {
+    }
 
     public ItineraryRequest(String city, List<String> interests, int days) {
         this.city = city;
@@ -37,5 +39,26 @@ public class ItineraryRequest {
 
     public void setDays(int days) {
         this.days = days;
+    }
+
+    @Override
+    public String toString() {
+        return "ItineraryRequest{" +
+                "city='" + city + '\'' +
+                ", interests=" + interests +
+                ", days=" + days +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ItineraryRequest that = (ItineraryRequest) o;
+        return days == that.days && Objects.equals(city, that.city) && Objects.equals(interests, that.interests);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(city, interests, days);
     }
 }

@@ -23,9 +23,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
 @AiScorer
-public class AgentDirectQuarkusTest {
+public class TravelPlannerAgentTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AgentDirectQuarkusTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TravelPlannerAgentTest.class);
 
     @Inject
     AiServiceEvaluation aiServiceEvaluation;

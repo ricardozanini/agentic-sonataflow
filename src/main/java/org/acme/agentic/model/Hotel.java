@@ -1,5 +1,7 @@
 package org.acme.agentic.model;
 
+import java.util.Objects;
+
 public class Hotel {
     private String name;
     private int price;
@@ -21,4 +23,25 @@ public class Hotel {
 
     public double getRating() { return rating; }
     public void setRating(double rating) { this.rating = rating; }
+
+    @Override
+    public String toString() {
+        return "Hotel{" +
+                "name='" + name + '\'' +
+                ", price=" + price +
+                ", rating=" + rating +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Hotel hotel = (Hotel) o;
+        return price == hotel.price && Double.compare(rating, hotel.rating) == 0 && Objects.equals(name, hotel.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, price, rating);
+    }
 }

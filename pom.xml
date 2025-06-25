@@ -52,6 +52,15 @@
             <artifactId>kogito-serverless-workflow-fluent</artifactId>
             <version>${kogito.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-serverless-workflow-executor-core</artifactId>
+            <version>${kogito.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest</artifactId>
+        </dependency>
 
 
         <dependency>
@@ -81,6 +90,11 @@
             <groupId>io.quarkiverse.langchain4j</groupId>
             <artifactId>quarkus-langchain4j-testing-scorer-semantic-similarity</artifactId>
             <version>${quarkus.langchain4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
