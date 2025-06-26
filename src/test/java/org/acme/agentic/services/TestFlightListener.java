@@ -3,16 +3,31 @@ package org.acme.agentic.services;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.cloudevents.CloudEvent;
+import io.cloudevents.jackson.JsonCloudEventData;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class TestFlightListener {
-    private CountDownLatch latch = new CountDownLatch(1);
-    private BudgetFlightPooler.FlightPooledEvent lastEvent;
 
-    public void onPooled(@Observes BudgetFlightPooler.FlightPooledEvent e) {
-        this.lastEvent = e;
+    @Inject
+    ObjectMapper objectMapper;
+
+    private CountDownLatch latch = new CountDownLatch(1);
+    private FlightPooledEvent lastEvent;
+
+    public void onPooled(@Observes CloudEvent event) throws JsonProcessingException {
+        JsonCloudEventData ced = (JsonCloudEventData) event.getData();
+        if (ced != null) {
+            this.lastEvent = objectMapper.treeToValue(ced.getNode(), FlightPooledEvent.class);
+        } else {
+            throw new IllegalStateException("Event Data not a JsonCloudEventData: " + event);
+        }
+
         latch.countDown();
     }
 
@@ -25,7 +40,7 @@ public class TestFlightListener {
         return latch.await(timeout, unit);
     }
 
-    public BudgetFlightPooler.FlightPooledEvent getLastEvent() {
+    public FlightPooledEvent getLastEvent() {
         return lastEvent;
     }
 }

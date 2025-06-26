@@ -2,6 +2,7 @@ package org.acme.agentic.workflows;
 
 import org.acme.agentic.agents.TravelPlannerAgent;
 import org.acme.agentic.services.BudgetFlightPooler;
+import org.acme.agentic.services.FlightPooledEvent;
 import org.acme.agentic.services.NotificationService;
 import org.kie.kogito.serverless.workflow.actions.WorkflowLogLevel;
 import org.kie.kogito.serverless.workflow.fluent.FunctionBuilder;
@@ -36,7 +37,7 @@ public class TravelPlannerFlow {
     @Inject
     BudgetFlightPooler budgetFlightPooler;
 
-    public void onBudgetFlightPoolerResult(@Observes BudgetFlightPooler.FlightPooledEvent e) {
+    public void onBudgetFlightPoolerResult(@Observes FlightPooledEvent e) {
 
     }
 

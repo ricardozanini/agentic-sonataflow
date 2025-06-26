@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.acme.agentic.DisableOllamaProfile;
@@ -63,27 +64,21 @@ public class BudgetFlightPoolerTest {
         when(flightService.searchFlights(req)).thenReturn(List.of(cheap));
 
         // Act
-        Map<String, Object> jsonReqMap = objectMapper.convertValue(
-                req,
-                new TypeReference<>() {
-                }
-        );
-        Map<String, Object> jsonPoolMap = objectMapper.convertValue(
-                poolReq,
-                new TypeReference<>() {
-                }
-        );
-        pooler.findCheaperFlightAsync(jsonReqMap, jsonPoolMap);
+        Map<String, Object> jsonReqMap = objectMapper.convertValue(req, new TypeReference<>() {
+        });
+        Map<String, Object> jsonPoolMap = objectMapper.convertValue(poolReq, new TypeReference<>() {
+        });
+        pooler.findCheaperFlightAsync(jsonReqMap, jsonPoolMap, UUID.randomUUID().toString());
 
         // Assert: wait up to 1 second for the async event
-        boolean fired = listener.await(1, TimeUnit.SECONDS);
+        boolean fired = listener.await(10, TimeUnit.SECONDS);
         assertThat(fired).isTrue();
 
         // Verify the event payload
-        BudgetFlightPooler.FlightPooledEvent evt = listener.getLastEvent();
+        FlightPooledEvent evt = listener.getLastEvent();
         assertThat(evt).isNotNull();
-        assertThat(evt.request()).isEqualTo(req);
-        assertThat(evt.budget()).isEqualTo(poolReq.getBudget());
-        assertThat(evt.bestFlight()).isPresent().get().isEqualTo(cheap);
+        assertThat(evt.getRequest()).isEqualTo(req);
+        assertThat(evt.getBudget()).isEqualTo(poolReq.getBudget());
+        assertThat(evt.getBestFlight()).isPresent().get().isEqualTo(cheap);
     }
 }

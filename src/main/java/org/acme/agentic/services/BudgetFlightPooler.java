@@ -11,8 +11,8 @@ import org.acme.agentic.model.Flight;
 import org.acme.agentic.model.FlightRequest;
 import org.eclipse.microprofile.context.ManagedExecutor;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.cloudevents.CloudEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
@@ -24,7 +24,7 @@ public class BudgetFlightPooler {
     FlightService flightService;
 
     @Inject
-    Event<FlightPooledEvent> flightPooledEvent;
+    Event<CloudEvent> flightPooledEvent;
 
     @Inject
     ManagedExecutor executor;
@@ -37,13 +37,13 @@ public class BudgetFlightPooler {
      * but will break out early as soon as it finds a flight under the given budget.
      * Fires a FlightPooledEvent at that moment (or after all attempts).
      *
-     * @param jsonReq        the flight request (destination, date, etc.)
+     * @param jsonReq         the flight request (destination, date, etc.)
      * @param jsonPoolRequest the flight budget pool request
      */
-    public String findCheaperFlightAsync(Map<String, Object> jsonReq, Map<String, Object> jsonPoolRequest) {
+    public String findCheaperFlightAsync(Map<String, Object> jsonReq, Map<String, Object> jsonPoolRequest, String processId) {
 
         final FlightRequest req = objectMapper.convertValue(jsonReq, FlightRequest.class);
-        final BudgetPoolRequest poolRequest =  objectMapper.convertValue(jsonPoolRequest, BudgetPoolRequest.class);
+        final BudgetPoolRequest poolRequest = objectMapper.convertValue(jsonPoolRequest, BudgetPoolRequest.class);
 
         executor.runAsync(() -> {
             Optional<Flight> best = Optional.empty();
@@ -72,16 +72,10 @@ public class BudgetFlightPooler {
                 }
             }
 
-            flightPooledEvent.fire(new FlightPooledEvent(req, poolRequest.getBudget(), best));
+            flightPooledEvent.fire(new FlightPooledEvent(req, poolRequest.getBudget(), best).asCloudEvent(processId, objectMapper));
         });
 
         return UUID.randomUUID().toString();
     }
 
-    /**
-     * CDI event carrying the original request, the budget, and the best flight
-     * found (if any).
-     */
-    public record FlightPooledEvent(FlightRequest request, double budget, Optional<Flight> bestFlight) {
-    }
 }
