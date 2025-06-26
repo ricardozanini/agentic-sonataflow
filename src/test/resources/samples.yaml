@@ -3,7 +3,7 @@
     - >
       I’d like to plan a trip to Berlin. 
       I’m leaving on 2025-07-10 and want to stay 3 nights, 
-      my max is $150 per night on hotels, 
+      my max is $150 per night on hotels,
       and I love history and great food. 
       My email is john@email.com if you need to notify me.
   expected-output: |

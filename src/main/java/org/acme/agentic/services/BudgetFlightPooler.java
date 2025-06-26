@@ -10,6 +10,8 @@ import org.acme.agentic.model.BudgetPoolRequest;
 import org.acme.agentic.model.Flight;
 import org.acme.agentic.model.FlightRequest;
 import org.eclipse.microprofile.context.ManagedExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.CloudEvent;
@@ -19,6 +21,8 @@ import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class BudgetFlightPooler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BudgetFlightPooler.class);
 
     @Inject
     FlightService flightService;
@@ -44,6 +48,8 @@ public class BudgetFlightPooler {
 
         final FlightRequest req = objectMapper.convertValue(jsonReq, FlightRequest.class);
         final BudgetPoolRequest poolRequest = objectMapper.convertValue(jsonPoolRequest, BudgetPoolRequest.class);
+
+        LOGGER.info("Commencing Flight Pooling for Flight {} and Budget {}", req, poolRequest);
 
         executor.runAsync(() -> {
             Optional<Flight> best = Optional.empty();
