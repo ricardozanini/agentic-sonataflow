@@ -4,10 +4,13 @@
       I’d like to plan a trip to Berlin. 
       I’m leaving on 2025-07-10 and want to stay 3 nights, 
       my max is $150 per night on hotels, 
-      and I love history and great food.
+      and I love history and great food. 
+      My email is john@email.com if you need to notify me.
   expected-output: |
     {
         "plan": "Fly the plane on 2025-07-11 at 09:00, stay at some hotel for 3 nights under $100/night, and visit place A, place B, and place C.",
         "airfareValue": 500,
-        "airfareBudget": 0
+        "airfareBudget": 0,
+        "userAddress": "john@email.com",
+        "flightRequest": {"date":"2025-07-10","destination":"Berlin"}}
     }

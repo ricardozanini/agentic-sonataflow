@@ -1,0 +1,87 @@
+package org.acme.agentic.services;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.acme.agentic.model.BudgetPoolRequest;
+import org.acme.agentic.model.Flight;
+import org.acme.agentic.model.FlightRequest;
+import org.eclipse.microprofile.context.ManagedExecutor;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
+
+@ApplicationScoped
+public class BudgetFlightPooler {
+
+    @Inject
+    FlightService flightService;
+
+    @Inject
+    Event<FlightPooledEvent> flightPooledEvent;
+
+    @Inject
+    ManagedExecutor executor;
+
+    @Inject
+    ObjectMapper objectMapper;
+
+    /**
+     * Asynchronously polls up to `attempts` times (sleeping `intervalMs` between),
+     * but will break out early as soon as it finds a flight under the given budget.
+     * Fires a FlightPooledEvent at that moment (or after all attempts).
+     *
+     * @param jsonReq        the flight request (destination, date, etc.)
+     * @param jsonPoolRequest the flight budget pool request
+     */
+    public String findCheaperFlightAsync(Map<String, Object> jsonReq, Map<String, Object> jsonPoolRequest) {
+
+        final FlightRequest req = objectMapper.convertValue(jsonReq, FlightRequest.class);
+        final BudgetPoolRequest poolRequest =  objectMapper.convertValue(jsonPoolRequest, BudgetPoolRequest.class);
+
+        executor.runAsync(() -> {
+            Optional<Flight> best = Optional.empty();
+
+            for (int i = 1; i <= poolRequest.getAttempts(); i++) {
+                List<Flight> flights = flightService.searchFlights(req);
+
+                Optional<Flight> cheapestThisRound = flights.stream().min(Comparator.comparingDouble(Flight::getPrice));
+
+                if (cheapestThisRound.isPresent()) {
+                    Flight candidate = cheapestThisRound.get();
+                    best = best.map(b -> b.getPrice() <= candidate.getPrice() ? b : candidate).or(() -> Optional.of(candidate));
+                }
+
+                if (best.isPresent() && best.get().getPrice() <= poolRequest.getBudget()) {
+                    break;
+                }
+
+                if (i < poolRequest.getAttempts()) {
+                    try {
+                        Thread.sleep(poolRequest.getIntervalMs());
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+            }
+
+            flightPooledEvent.fire(new FlightPooledEvent(req, poolRequest.getBudget(), best));
+        });
+
+        return UUID.randomUUID().toString();
+    }
+
+    /**
+     * CDI event carrying the original request, the budget, and the best flight
+     * found (if any).
+     */
+    public record FlightPooledEvent(FlightRequest request, double budget, Optional<Flight> bestFlight) {
+    }
+}

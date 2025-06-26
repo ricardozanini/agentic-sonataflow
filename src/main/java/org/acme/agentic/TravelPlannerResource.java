@@ -1,6 +1,9 @@
 package org.acme.agentic;
 
-import org.acme.agentic.agents.TravelPlannerAgent;
+import java.util.Map;
+
+import org.acme.agentic.workflows.TravelPlannerFlow;
+import org.kie.kogito.serverless.workflow.executor.StaticWorkflowApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,21 +17,16 @@ import jakarta.ws.rs.core.Response;
 public class TravelPlannerResource {
     private static final Logger LOG = LoggerFactory.getLogger(TravelPlannerResource.class);
 
-    //    @Inject
-//    TravelPlannerFlow travelPlannerFlow;
     @Inject
-    TravelPlannerAgent agent;
+    TravelPlannerFlow travelPlannerFlow;
 
     @POST
     public Response planTravel(String travelRequirement) {
-//        try (StaticWorkflowApplication app = StaticWorkflowApplication.create()) {
-//            var flowData = app.execute(travelPlannerFlow.flightPriceWatcher(), Map.of("req", travelRequirement)).getWorkflowdata().toPrettyString();
-//            LOG.info("Response returned from workflow: \n{}", flowData);
-//            return Response.ok(flowData).type(MediaType.APPLICATION_JSON).build();
-//        }
-        var response = agent.planTrip(travelRequirement);
-        LOG.info("Response returned from workflow: \n{}", response);
-        return Response.ok(response).type(MediaType.APPLICATION_JSON).build();
+        try (StaticWorkflowApplication app = StaticWorkflowApplication.create()) {
+            var workflowId = app.execute(travelPlannerFlow.flightPriceWatcherFlow(), Map.of("req", travelRequirement)).getId();
+            LOG.info("Workflow has been started with ID: {}", workflowId);
+            return Response.ok(workflowId).type(MediaType.TEXT_PLAIN).build();
+        }
     }
 
 }
