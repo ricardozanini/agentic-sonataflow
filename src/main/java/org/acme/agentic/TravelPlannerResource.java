@@ -1,6 +1,8 @@
 package org.acme.agentic;
 
+import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import org.acme.agentic.workflows.TravelPlannerFlow;
 import org.kie.kogito.serverless.workflow.executor.StaticWorkflowApplication;
@@ -25,7 +27,14 @@ public class TravelPlannerResource {
         try (StaticWorkflowApplication app = StaticWorkflowApplication.create()) {
             var workflowId = app.execute(travelPlannerFlow.flightPriceWatcherFlow(), Map.of("req", travelRequirement)).getId();
             LOG.info("Workflow has been started with ID: {}", workflowId);
-            return Response.ok(workflowId).type(MediaType.TEXT_PLAIN).build();
+
+            var workflowData = app.waitForFinish(workflowId, Duration.ofSeconds(90000)).orElseThrow().getWorkflowdata();
+            LOG.info("Workflow data is: \n {}", workflowData);
+
+            return Response.ok(workflowData).type(MediaType.TEXT_PLAIN).build();
+        } catch (InterruptedException | TimeoutException e) {
+            LOG.error("Workflow has been interrupted", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 

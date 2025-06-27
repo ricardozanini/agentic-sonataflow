@@ -9,14 +9,15 @@ import java.util.UUID;
 import org.acme.agentic.model.BudgetPoolRequest;
 import org.acme.agentic.model.Flight;
 import org.acme.agentic.model.FlightRequest;
+import org.acme.agentic.workflows.TravelPlannerFlow;
 import org.eclipse.microprofile.context.ManagedExecutor;
+import org.kie.kogito.serverless.workflow.executor.events.InMemoryEventShared;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.CloudEvent;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
@@ -26,9 +27,6 @@ public class BudgetFlightPooler {
 
     @Inject
     FlightService flightService;
-
-    @Inject
-    Event<CloudEvent> flightPooledEvent;
 
     @Inject
     ManagedExecutor executor;
@@ -78,7 +76,9 @@ public class BudgetFlightPooler {
                 }
             }
 
-            flightPooledEvent.fire(new FlightPooledEvent(req, poolRequest.getBudget(), best).asCloudEvent(processId, objectMapper));
+            CloudEvent event = new FlightPooledEvent(req, poolRequest.getBudget(), best).asCloudEvent(processId, objectMapper);
+            LOGGER.info("Flight Pooling for Flight {} and Budget {}", req, best);
+            InMemoryEventShared.INSTANCE.receivers().get(TravelPlannerFlow.Events.FLIGHT_POOLER_RESULT).onEvent(event);
         });
 
         return UUID.randomUUID().toString();

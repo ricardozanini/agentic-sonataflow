@@ -1,0 +1,50 @@
+- name: Berlin Summary (Over Budget)
+  parameters:
+    - >
+      {
+        "plan": "Fly Emirates on 2025-07-10 at 09:00, stay at Grand Berlin Hotel for 3 nights under $150/night, and visit Brandenburg Gate, Museum Island, and Reichstag.",
+        "airfareValue": 200,
+        "airfareBudget": 150,
+        "userAddress": "john@example.com",
+        "flightRequest": {"destination":"Berlin","date":"2025-07-10"}
+      }
+  expected-output: >
+    I’m sorry: we couldn’t find a flight under your budget of $150. Here’s your updated travel timeline:
+    Day 1 – Fly Emirates at 09:00, then visit Brandenburg Gate.  
+    Day 2 – Explore Museum Island.  
+    Day 3 – Tour the Reichstag.
+
+- name: Paris Summary (Within Budget)
+  parameters:
+    - >
+      {
+        "plan": "Fly KLM on 2025-09-05 at 14:00, stay at Seine View Hotel for 4 nights under $200/night, and visit the Louvre, Eiffel Tower, Montmartre, and walk along the Seine.",
+        "airfareValue": 180,
+        "airfareBudget": 200,
+        "userAddress": "parisfan@example.org",
+        "flightRequest": {"destination":"Paris","date":"2025-09-05"}
+      }
+  expected-output: >
+    Hello! Here’s your Paris trip timeline:
+    Day 1 – Fly KLM at 14:00 and visit the Louvre.  
+    Day 2 – Tour the Eiffel Tower.  
+    Day 3 – Stroll along the Seine.  
+    Day 4 – Discover Montmartre.
+
+- name: Rome Summary (No Notification)
+  parameters:
+    - >
+      {
+        "plan": "Fly ITA Airways on 2025-08-15 at 11:00, stay at Coliseum Boutique Hotel for 5 nights, and visit the Colosseum, Vatican Museums, Trastevere, and the Pantheon.",
+        "airfareValue": 300,
+        "airfareBudget": 0,
+        "userAddress": "",
+        "flightRequest": {"destination":"Rome","date":"2025-08-15"}
+      }
+  expected-output: >
+    Here’s your Rome itinerary:
+    Day 1 – Fly ITA Airways at 11:00 and explore the Colosseum.  
+    Day 2 – Visit the Vatican Museums.  
+    Day 3 – Wander through Trastevere.  
+    Day 4 – Marvel at the Pantheon.  
+    Day 5 – Relax with local cuisine in Campo de' Fiori.

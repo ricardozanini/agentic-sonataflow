@@ -19,11 +19,11 @@ public class StubFlightService implements FlightService {
     @Inject
     StubUtils utils;
 
-    @Tool("search for flights based on destination and date")
-    @Override
-    public List<Flight> searchFlights(FlightRequest request) {
-        LOGGER.info("Searching flights based on destination and date {}", request);
-        return utils.loadList("flights.json", new TypeReference<>() {
+        @Tool("search for flights based on destination and date")
+        @Override
+        public List<Flight> searchFlights(FlightRequest request) {
+            LOGGER.info("Searching flights based on destination and date {}", request);
+            return utils.loadList("flights.json", new TypeReference<>() {
         });
     }
 }
