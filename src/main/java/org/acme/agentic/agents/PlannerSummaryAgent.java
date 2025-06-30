@@ -9,9 +9,7 @@ import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
 import io.quarkiverse.langchain4j.RegisterAiService;
 import io.quarkiverse.langchain4j.ToolBox;
-import jakarta.enterprise.context.ApplicationScoped;
 
-@ApplicationScoped
 @RegisterAiService(modelName = "llama3")
 @SystemMessage("""
         You are a travel summary agent. You receive exactly one JSON object:
