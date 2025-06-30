@@ -41,6 +41,8 @@ import io.quarkiverse.langchain4j.ToolBox;
         - Do not wrap the entire JSON in backticks or any other fences.
         - Do not emit any extra text before, between, or after those blocks.
         - After you output that one JSON object, the conversation is over—no more messages.
+
+        THE REPLY MUST BE A VALID JSON ONLY.
     """)
 public interface TravelPlannerAgent {
 

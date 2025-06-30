@@ -31,7 +31,7 @@ public class TravelPlannerResource {
             JsonNodeModel processInstance = app.execute(travelPlannerFlow.flightPriceWatcherFlow(), Map.of("req", travelRequirement));
             JsonNode workflowData = processInstance.getWorkflowdata();
             String workflowId = processInstance.getId();
-            if (app.findProcessById(workflowId).isPresent()) {
+            if (app.variables(workflowId).isPresent()) {
                 LOG.info("Workflow has been started with ID: {}", workflowId);
                 workflowData = app.waitForFinish(workflowId, Duration.ofSeconds(90000)).orElseThrow().getWorkflowdata();
             }

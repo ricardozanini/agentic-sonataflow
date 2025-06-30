@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 @QuarkusTest
-public class TravelPlannerResourceTest {
+public class  TravelPlannerResourceTest {
 
     @Test
     public void testPlanTravelAboveBudgetEndpoint() {
