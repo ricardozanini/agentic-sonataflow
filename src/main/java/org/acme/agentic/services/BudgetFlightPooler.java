@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.acme.agentic.agents.PlannerSummaryAgent;
+import org.acme.agentic.agents.TravelPlannerAgent;
 import org.acme.agentic.model.BudgetPoolRequest;
 import org.acme.agentic.model.Flight;
 import org.acme.agentic.model.FlightRequest;
@@ -30,6 +32,12 @@ public class BudgetFlightPooler {
 
     @Inject
     ManagedExecutor executor;
+    
+    @Inject
+    TravelPlannerAgent travelPlannerAgent;
+
+    @Inject
+    PlannerSummaryAgent plannerSummaryAgent;
 
     @Inject
     ObjectMapper objectMapper;
