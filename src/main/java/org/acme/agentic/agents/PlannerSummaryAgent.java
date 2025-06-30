@@ -4,15 +4,16 @@ import java.util.Map;
 
 import org.acme.agentic.services.NotificationService;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
 import io.quarkiverse.langchain4j.RegisterAiService;
 import io.quarkiverse.langchain4j.ToolBox;
+import jakarta.enterprise.context.ApplicationScoped;
+
 
 @RegisterAiService(modelName = "llama3")
+@ApplicationScoped
 @SystemMessage("""
         You are a travel summary agent. You receive exactly one JSON object:
         
