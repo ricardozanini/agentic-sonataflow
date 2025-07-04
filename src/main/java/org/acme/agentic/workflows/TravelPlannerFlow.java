@@ -36,26 +36,25 @@ public class TravelPlannerFlow {
 
     public Workflow flightPriceWatcherFlow() {
         final OperationStateBuilder callPlannerSummaryAgent = operation()
-                .inputFilter("{ plan, airfareValue, airfareBudget, userAddress }")
-                .action(call("summaryPlan", "."));
+                .action(call("summaryPlan", "{ plan, airfareValue, airfareBudget, userAddress }"))
+                .outputFilter(".response");
 
         return workflow("flight-price-watcher")
                 .function(FunctionBuilder.java("summaryPlan", plannerSummaryAgent::summaryPlan))
                 .start(operation()
                         // returns a schema as { plan, airfareValue, airfareBudget }
                         .action(
-                                call(FunctionBuilder.java("planTrip", travelPlannerAgent::planTrip), ".req")).outputFilter("{ plan, airfareValue, airfareBudget, userAddress, flightRequest }"))
+                                call(FunctionBuilder.java("planTrip", travelPlannerAgent::planTrip), ".req").outputFilter("{ plan, airfareValue, airfareBudget, userAddress, flightRequest }")))
                 .when(".airfareBudget == 0 or .airfareValue <= .airfareBudget")
                     .next(callPlannerSummaryAgent).end()
                 .when(".airfareValue > .airfareBudget")
                     .next(operation()
-                            .outputFilter("del(.response)")
                             .action(
                                     call(FunctionBuilder.java("notifyPooling", notificationService::notifyPooling),
-                                            ".userAddress", "Travel Plan On Holding", "Your travel plan is on holding, we will check with Flight companies a better price under your budget.")))
+                                            ".userAddress", "Travel Plan On Holding", "Your travel plan is on holding, we will check with Flight companies a better price under your budget.").noResult()))
                     .next(callback(
                             call(FunctionBuilder.java("findCheaperFlightAsync", budgetFlightPooler::findCheaperFlightAsync),
-                                    ".flightRequest", "{ budget: .airfareBudget, attempts: 10, intervalMs: 1000 }", "$WORKFLOW.instanceId"), eventDef(Events.FLIGHT_POOLER_RESULT)))
+                                    ".flightRequest", "{ budget: .airfareBudget, attempts: 10, intervalMs: 1000 }", "$WORKFLOW.instanceId").noResult(), eventDef(Events.FLIGHT_POOLER_RESULT)))
                     .next(operation().action(log(WorkflowLogLevel.INFO, " . ")))
                     .next(callPlannerSummaryAgent).end()
                 .end().build();
