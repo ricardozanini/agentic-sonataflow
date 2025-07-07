@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import org.acme.agentic.workflows.TravelPlannerFlow;
+import org.eclipse.microprofile.context.ManagedExecutor;
 import org.kie.kogito.serverless.workflow.executor.StaticWorkflowApplication;
 import org.kie.kogito.serverless.workflow.models.JsonNodeModel;
 import org.slf4j.Logger;
@@ -24,10 +25,13 @@ public class TravelPlannerResource {
 
     @Inject
     TravelPlannerFlow travelPlannerFlow;
+    
+    @Inject
+    ManagedExecutor executor;
 
     @POST
     public Response planTravel(String travelRequirement) {
-        try (StaticWorkflowApplication app = StaticWorkflowApplication.create()) {
+        try (StaticWorkflowApplication app = StaticWorkflowApplication.builder().withExecutorService(executor).build()) {
             JsonNodeModel processInstance = app.execute(travelPlannerFlow.flightPriceWatcherFlow(), Map.of("req", travelRequirement));
             JsonNode workflowData = processInstance.getWorkflowdata();
             String workflowId = processInstance.getId();
