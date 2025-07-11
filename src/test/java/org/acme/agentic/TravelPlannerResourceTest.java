@@ -16,10 +16,11 @@ public class  TravelPlannerResourceTest {
     @Test
     public void testPlanTravelAboveBudgetEndpoint() {
         // this text should include a max airfare budget so the agent can extract it
-        String requirement = "I’d like to plan a trip to Berlin. \n" +
-                "      I’m leaving on 2025-07-10 and want to stay 3 nights, \n" +
-                "      my max is $150. For airfare, my max budget is $100 \n" +
-                "      and I love history and great food. If you need to contact me later, my email is luke@love.ia";
+        String requirement = """
+                I’d like to plan a trip to Berlin.\s
+                      I’m leaving on 2025-07-10 and want to stay 3 nights,\s
+                      my max is $150. For airfare, my max budget is $10\s
+                      and I love history and great food. If you need to contact me later, my email is luke@love.ia""";
 
         given()
                 .contentType(ContentType.TEXT)
@@ -35,10 +36,11 @@ public class  TravelPlannerResourceTest {
     @Test
     public void testPlanTravelBelowBudgetEndpoint() {
         // this text should include a max airfare budget so the agent can extract it
-        String requirement = "I’d like to plan a trip to Berlin. \n" +
-                "      I’m leaving on 2025-07-10 and want to stay 3 nights, \n" +
-                "      my max is $1500. For airfare, my max budget is $3000 \n" +
-                "      and I love history and great food. If you need to contact me later, my email is luke@love.ia";
+        String requirement = """
+                I’d like to plan a trip to Berlin.\s
+                      I’m leaving on 2025-07-10 and want to stay 3 nights,\s
+                      my max is $1500. For airfare, my max budget is $3000\s
+                      and I love history and great food. If you need to contact me later, my email is luke@love.ia""";
 
         given()
                 .contentType(ContentType.TEXT)

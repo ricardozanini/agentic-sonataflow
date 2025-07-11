@@ -44,10 +44,10 @@ public class TravelPlannerFlow {
                 .start(operation()
                         // returns a schema as { plan, airfareValue, airfareBudget }
                         .action(
-                                call(FunctionBuilder.java("planTrip", travelPlannerAgent::planTrip), ".req").outputFilter("{ plan, airfareValue, airfareBudget, userAddress, flightRequest }")))
+                                call(FunctionBuilder.java("planTrip", travelPlannerAgent::planTrip), ".req")).outputFilter("{ plan, airfareValue, airfareBudget, userAddress, flightRequest }"))
                 .when(".airfareBudget == 0 or .airfareValue <= .airfareBudget")
                     .next(callPlannerSummaryAgent).end()
-                .when(".airfareValue > .airfareBudget")
+                .or()
                     .next(operation()
                             .action(
                                     call(FunctionBuilder.java("notifyPooling", notificationService::notifyPooling),
@@ -55,8 +55,7 @@ public class TravelPlannerFlow {
                     .next(callback(
                             call(FunctionBuilder.java("findCheaperFlightAsync", budgetFlightPooler::findCheaperFlightAsync),
                                     ".flightRequest", "{ budget: .airfareBudget, attempts: 10, intervalMs: 1000 }", "$WORKFLOW.instanceId").noResult(), eventDef(Events.FLIGHT_POOLER_RESULT)))
-                    .next(operation().action(log(WorkflowLogLevel.INFO, " . ")))
-                    .next(callPlannerSummaryAgent).end()
+                    .next(callPlannerSummaryAgent)
                 .end().build();
     }
 
