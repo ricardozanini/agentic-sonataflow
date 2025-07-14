@@ -15,6 +15,12 @@ A sample Quarkus application demonstrating **agentic AI** workflows using **Lang
 
 ## 🚀 Prerequisites & Local LLM
 
+> [!WARNING]
+> **Performance Notice:** The first run may take a long time as the LLM model is downloaded.  
+> Subsequent runs will be faster.  
+> Also, in environments without a GPU or hardware acceleration, model response times can be slower.
+
+
 ### Container engine (for Ollama DevServices)
 
 - **macOS (Colima)**  
