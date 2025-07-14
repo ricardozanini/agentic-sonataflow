@@ -29,6 +29,39 @@ A sample Quarkus application demonstrating **agentic AI** workflows using **Lang
 - **Linux/Windows (Docker Desktop)**  
   Ensure Docker Desktop is running with at least 16 GB RAM allocated.
 
+### Maven Snapshots
+
+This project uses Kogito **999-SNAPSHOT** artifacts. You must enable the Apache Snapshots repository in your Maven settings (`~/.m2/settings.xml`) so that these snapshot dependencies can be resolved:
+
+```xml
+<settings>
+  ...
+  <profiles>
+    <profile>
+      <id>apache-snapshots</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>apache.snapshots</id>
+          <name>Apache Snapshot Repository</name>
+          <url>https://repository.apache.org/content/groups/snapshots-group/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+</settings>
+```
+
+Without this, Maven will fail to find the Kogito snapshot dependencies.
+
 ### Build & Run
 
 1. **Clone**  
